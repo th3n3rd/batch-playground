@@ -27,7 +27,7 @@ class GreetJobTests {
 
     @Test
     @SneakyThrows
-    void saysHelloToEverybody() {
+    void greetEverybody() {
         people.saveAll(List.of(
            Person.identifiedBy("SZ659218A", "Alice"),
            Person.identifiedBy("WK892520", "Bob"),
