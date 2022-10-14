@@ -29,7 +29,7 @@ class ListMerchantAccountsApi {
 
         @AllArgsConstructor
         static class Detail {
-            public MerchantAccount merchantInfo;
+            public MerchantAccount accountInfo;
         }
     }
 }
