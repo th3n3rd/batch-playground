@@ -1,4 +1,4 @@
-package com.example.batch;
+package com.example.batch.greetings;
 
 import static lombok.AccessLevel.PROTECTED;
 

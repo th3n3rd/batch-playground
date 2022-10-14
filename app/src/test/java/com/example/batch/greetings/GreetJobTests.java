@@ -1,7 +1,11 @@
-package com.example.batch;
+package com.example.batch.greetings;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.example.batch.greetings.Greeting;
+import com.example.batch.greetings.Greetings;
+import com.example.batch.greetings.People;
+import com.example.batch.greetings.Person;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;

@@ -1,4 +1,4 @@
-package com.example.batch;
+package com.example.batch.greetings;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-class JourneyTests {
+class OnboardingJourneyTests {
 
     @Autowired
     private WebTestClient client;
