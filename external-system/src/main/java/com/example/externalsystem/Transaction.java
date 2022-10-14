@@ -1,5 +1,7 @@
 package com.example.externalsystem;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
@@ -25,6 +27,8 @@ class Transaction {
 
     @Embedded
     public Amount transactionAmount;
+
+    private OffsetDateTime transactionUpdateDate;
 
     @Embeddable
     @Getter
