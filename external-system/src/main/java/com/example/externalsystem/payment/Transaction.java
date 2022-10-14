@@ -1,6 +1,5 @@
-package com.example.externalsystem;
+package com.example.externalsystem.payment;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import javax.persistence.Embeddable;

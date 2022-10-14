@@ -1,8 +1,7 @@
-package com.example.externalsystem;
+package com.example.externalsystem.payment;
 
 import com.github.javafaker.Faker;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;

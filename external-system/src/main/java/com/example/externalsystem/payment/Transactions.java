@@ -1,8 +1,6 @@
-package com.example.externalsystem;
+package com.example.externalsystem.payment;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

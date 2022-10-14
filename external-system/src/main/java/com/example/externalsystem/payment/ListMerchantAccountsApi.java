@@ -1,4 +1,4 @@
-package com.example.externalsystem;
+package com.example.externalsystem.payment;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,7 +13,7 @@ class ListMerchantAccountsApi {
 
     private final MerchantAccounts accounts;
 
-    @GetMapping("/v1/accounts")
+    @GetMapping("/v1/payment/accounts")
     Response listAccounts() {
         return new Response(
             accounts.findAll()

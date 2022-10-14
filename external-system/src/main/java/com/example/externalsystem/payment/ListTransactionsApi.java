@@ -1,4 +1,4 @@
-package com.example.externalsystem;
+package com.example.externalsystem.payment;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -27,7 +27,7 @@ class ListTransactionsApi {
 
     private final Transactions transactions;
 
-    @GetMapping("/v1/accounts/{accountId}/transactions")
+    @GetMapping("/v1/payment/accounts/{accountId}/transactions")
     Response listTransactions(
         @PathVariable UUID accountId,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDate,

@@ -1,4 +1,4 @@
-package com.example.externalsystem;
+package com.example.externalsystem.payment;
 
 import java.util.UUID;
 import javax.persistence.Entity;

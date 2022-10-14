@@ -1,3 +1,3 @@
-package com.example.externalsystem;
+package com.example.externalsystem.payment;
 
 class ResultSetTooLargeException extends RuntimeException {}
