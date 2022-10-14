@@ -39,7 +39,7 @@ class TestDataLoader implements ApplicationRunner {
                     new Transaction(
                         UUID.randomUUID(),
                         account.getAccountId(),
-                        new Transaction.Amount(
+                        new Amount(
                             "USD",
                             randomAmountValue(faker, minAmount, maxAmount)
                         ),
@@ -55,8 +55,8 @@ class TestDataLoader implements ApplicationRunner {
         log.info("Transactions time range span from %s to %s".formatted(startDate, endDate));
     }
 
-    private static String randomAmountValue(Faker faker, int minAmount, int maxAmount) {
-        return String.valueOf(faker.number().randomDouble(2, minAmount, maxAmount));
+    private static Double randomAmountValue(Faker faker, int minAmount, int maxAmount) {
+        return faker.number().randomDouble(2, minAmount, maxAmount);
     }
 
     private static OffsetDateTime randomDateBetween(Faker faker, OffsetDateTime startDate, OffsetDateTime endDate) {

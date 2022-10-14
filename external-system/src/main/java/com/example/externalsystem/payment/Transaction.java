@@ -2,7 +2,6 @@ package com.example.externalsystem.payment;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
-import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -28,13 +27,4 @@ class Transaction {
     public Amount transactionAmount;
 
     private OffsetDateTime transactionUpdateDate;
-
-    @Embeddable
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Amount {
-        private String currencyCode;
-        private String value;
-    }
 }
