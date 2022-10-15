@@ -32,7 +32,7 @@ class ListTransactionsApi {
         @PathVariable UUID accountId,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDate,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime endDate,
-        @RequestParam(defaultValue = "1", required = false) int page,
+        @RequestParam(defaultValue = "0", required = false) int page,
         @RequestParam(defaultValue = "20", required = false) int pageSize
     ) {
         validateDateRange(startDate, endDate);
