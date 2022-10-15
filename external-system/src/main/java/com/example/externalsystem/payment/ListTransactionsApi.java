@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 class ListTransactionsApi {
 
-    private static final int MaxResultSetSize = 10_000;
-    private static final int MaxDateRangeInDays = 31;
+   public static final int MaxResultSetSize = 10_000;
+   public static final int MaxDateRangeInDays = 31;
 
     private final Transactions transactions;
 

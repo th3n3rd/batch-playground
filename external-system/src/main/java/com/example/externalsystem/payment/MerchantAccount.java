@@ -1,5 +1,6 @@
 package com.example.externalsystem.payment;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -15,4 +16,6 @@ import lombok.NoArgsConstructor;
 class MerchantAccount {
     @Id
     private UUID accountId;
+
+    private OffsetDateTime createdAt;
 }

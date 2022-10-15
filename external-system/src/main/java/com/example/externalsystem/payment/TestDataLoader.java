@@ -1,5 +1,7 @@
 package com.example.externalsystem.payment;
 
+import static com.example.externalsystem.payment.ListTransactionsApi.MaxDateRangeInDays;
+
 import com.github.javafaker.Faker;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -29,10 +31,14 @@ class TestDataLoader implements ApplicationRunner {
         var transactionsPerAccount = 100;
         var minAmount = -1000;
         var maxAmount = 1000;
-        var startDate = OffsetDateTime.parse("2022-09-01T00:00:00+00:00");
-        var endDate = OffsetDateTime.parse("2022-10-31T23:59:59+00:00");
+        var pastDate = OffsetDateTime.parse("2022-01-01T00:00:00+00:00");
+        var presentDate = pastDate.plusDays(MaxDateRangeInDays + 1);
+        var futureDate = presentDate.plusDays(MaxDateRangeInDays + 1);
         for (int i = 0; i < numberOfAccounts; i++) {
-            var account = new MerchantAccount(UUID.randomUUID());
+            var account = new MerchantAccount(
+                UUID.randomUUID(),
+                randomDateBetween(faker, pastDate, presentDate)
+            );
             testAccounts.add(account);
             for (int j = 0; j < transactionsPerAccount; j++) {
                 testTransactions.add(
@@ -43,7 +49,7 @@ class TestDataLoader implements ApplicationRunner {
                             "USD",
                             randomAmountValue(faker, minAmount, maxAmount)
                         ),
-                        randomDateBetween(faker, startDate, endDate)
+                        randomDateBetween(faker, presentDate, futureDate)
                     ));
             }
         }
@@ -52,7 +58,7 @@ class TestDataLoader implements ApplicationRunner {
         log.info("Loaded %s accounts for testing".formatted(numberOfAccounts));
         log.info("Loaded a total of %s transactions for testing, %s per account".formatted(numberOfAccounts * transactionsPerAccount, transactionsPerAccount));
         log.info("The first loaded account id for testing was %s".formatted(testAccounts.get(0).getAccountId()));
-        log.info("Transactions time range span from %s to %s".formatted(startDate, endDate));
+        log.info("Transactions time range span from %s to %s".formatted(presentDate, futureDate));
     }
 
     private static Double randomAmountValue(Faker faker, int minAmount, int maxAmount) {
