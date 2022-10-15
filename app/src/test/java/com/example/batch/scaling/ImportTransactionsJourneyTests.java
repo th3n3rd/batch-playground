@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import com.example.batch.payment.Transactions;
+import com.example.batch.payment.client.MerchantAccounts;
 import com.example.batch.payment.client.PaymentApiClient;
 import java.util.UUID;
 import lombok.SneakyThrows;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 @Tag("e2e")
@@ -31,16 +31,16 @@ abstract public class ImportTransactionsJourneyTests {
 
     @Test
     void importGivenAccount() {
-        var accountId = randomAccountIdFromSource();
-        importTransactions(accountId);
-        assertThat(countTransactions(accountId)).isEqualTo(countTransactionsFromSource(accountId));
+        var account = randomAccountIdFromSource();
+        importTransactions(account);
+        assertThat(countTransactions(account)).isEqualTo(countTransactionsFromSource(account));
     }
 
     @SneakyThrows
-    private long countTransactionsFromSource(String accountId) {
+    private long countTransactionsFromSource(MerchantAccounts.Detail account) {
         return paymentApiClient
             .listTransactions(
-                accountId,
+                account.accountInfo.accountId,
                 "2022-09-01T00:00Z",
                 "2022-09-30T00:00Z"
             )
@@ -49,21 +49,20 @@ abstract public class ImportTransactionsJourneyTests {
             .totalItems;
     }
 
-    private long countTransactions(String accountId) {
-        return transactions.countAllByAccountId(UUID.fromString(accountId));
+    private long countTransactions(MerchantAccounts.Detail account) {
+        return transactions.countAllByAccountId(UUID.fromString(account.accountInfo.accountId));
     }
 
     @SneakyThrows
-    private String randomAccountIdFromSource() {
+    private MerchantAccounts.Detail randomAccountIdFromSource() {
         return paymentApiClient.listAccounts()
             .execute()
             .body()
             .accountDetails
             .stream()
-            .map(it -> it.accountInfo.accountId)
             .findAny()
             .orElseThrow();
     }
 
-    abstract protected void importTransactions(String accountId);
+    abstract protected void importTransactions(MerchantAccounts.Detail account);
 }
