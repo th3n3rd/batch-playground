@@ -2,6 +2,7 @@ package com.example.batch.scaling.none;
 
 import com.example.batch.payment.client.PaymentApiClient;
 import com.example.batch.payment.client.RawTransactions;
+import java.time.OffsetDateTime;
 import java.util.Iterator;
 import java.util.Objects;
 import lombok.SneakyThrows;
@@ -31,11 +32,14 @@ class ExtractPaginatedRawTransactions extends AbstractPaginatedDataItemReader<Ra
     @SneakyThrows
     @Override
     protected Iterator<RawTransactions.Detail> doPageRead() {
+        var account = paymentApiClient.accountDetails(accountId).execute().body();
+        var fromAccountCreation = OffsetDateTime.parse(account.accountInfo.createdAt).toString();
+        var untilNow = OffsetDateTime.now().toString();
         var responseBody = paymentApiClient
             .listTransactions(
                 accountId,
-                "2022-09-01T00:00Z",
-                "2022-09-30T00:00Z",
+                fromAccountCreation,
+                untilNow,
                 page,
                 pageSize
             )

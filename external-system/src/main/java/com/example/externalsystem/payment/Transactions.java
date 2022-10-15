@@ -16,6 +16,12 @@ interface Transactions extends JpaRepository<Transaction, UUID> {
         Pageable paging
     );
 
+    long countAllByMerchantAccountIdAndTransactionUpdateDateBetween(
+        UUID accountId,
+        OffsetDateTime startDate,
+        OffsetDateTime endDate
+    );
+
     @Query(value = "select transactionAmount.currencyCode, sum(transactionAmount.value) from Transaction where merchantAccountId = ?1 group by transactionAmount.currencyCode")
     List<Object[]> calculateBalancesByMerchantAccountId(UUID accountId);
 }

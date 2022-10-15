@@ -11,5 +11,6 @@ public class MerchantAccounts {
 
     public static class Info {
         public String accountId;
+        public String createdAt;
     }
 }

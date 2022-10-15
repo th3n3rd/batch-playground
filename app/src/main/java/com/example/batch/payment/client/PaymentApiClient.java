@@ -14,6 +14,11 @@ public interface PaymentApiClient {
     @GET("/v1/payment/accounts")
     Call<MerchantAccounts> listAccounts();
 
+    @GET("/v1/payment/accounts/{accountId}")
+    Call<MerchantAccounts.Detail> accountDetails(
+        @Path("accountId") String accountId
+    );
+
     @GET("/v1/payment/accounts/{accountId}/transactions")
     Call<RawTransactions> listTransactions(
         @Path("accountId") String accountId,
@@ -28,5 +33,12 @@ public interface PaymentApiClient {
         @Query("endDate") String endDate,
         @Query("page") int page,
         @Query("pageSize") int pageSize
+    );
+
+    @GET("/v1/payment/accounts/{accountId}/transactions/count")
+    Call<RawTransactionsCount> countTransactions(
+        @Path("accountId") String accountId,
+        @Query("startDate") String startDate,
+        @Query("endDate") String endDate
     );
 }

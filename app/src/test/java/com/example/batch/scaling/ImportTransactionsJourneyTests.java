@@ -6,6 +6,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import com.example.batch.payment.Transactions;
 import com.example.batch.payment.client.MerchantAccounts;
 import com.example.batch.payment.client.PaymentApiClient;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -33,16 +34,20 @@ abstract public class ImportTransactionsJourneyTests {
     void importGivenAccount() {
         var account = randomAccountIdFromSource();
         importTransactions(account);
-        assertThat(countTransactions(account)).isEqualTo(countTransactionsFromSource(account));
+        assertThat(countTransactions(account))
+            .isGreaterThan(0)
+            .isEqualTo(countTransactionsFromSource(account));
     }
 
     @SneakyThrows
     private long countTransactionsFromSource(MerchantAccounts.Detail account) {
+        var fromAccountCreation = account.accountInfo.createdAt;
+        var untilNow = OffsetDateTime.now().toString();
         return paymentApiClient
-            .listTransactions(
+            .countTransactions(
                 account.accountInfo.accountId,
-                "2022-09-01T00:00Z",
-                "2022-09-30T00:00Z"
+                fromAccountCreation,
+                untilNow
             )
             .execute()
             .body()
