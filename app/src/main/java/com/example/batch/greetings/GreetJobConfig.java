@@ -15,6 +15,7 @@ import org.springframework.batch.item.data.builder.RepositoryItemWriterBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
 @RequiredArgsConstructor
@@ -24,9 +25,11 @@ class GreetJobConfig {
     private final JobBuilderFactory jobs;
     private final StepBuilderFactory steps;
 
+    static final String Name = "greet-job";
+
     @Bean
     Job greetJob(People people, Greetings greetings) {
-        return jobs.get("greet-job")
+        return jobs.get(Name)
             .start(greetStep(people, greetings))
             .build();
     }

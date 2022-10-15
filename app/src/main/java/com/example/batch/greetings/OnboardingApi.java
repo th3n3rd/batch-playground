@@ -1,11 +1,11 @@
 package com.example.batch.greetings;
 
+import com.example.batch.utils.Jobs;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 class OnboardingApi {
 
-    private final Job greetJob;
+    private final Jobs jobs;
     private final JobLauncher jobLauncher;
     private final People people;
     private final Greetings greetings;
@@ -38,7 +38,7 @@ class OnboardingApi {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping("/people/all/greetings")
     void greetEverybody() {
-        jobLauncher.run(greetJob, new JobParameters());
+        jobLauncher.run(jobs.findByName(GreetJobConfig.Name), new JobParameters());
     }
 
     @GetMapping("/people/all/greetings")
