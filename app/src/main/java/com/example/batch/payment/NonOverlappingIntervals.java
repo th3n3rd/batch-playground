@@ -42,5 +42,4 @@ public class NonOverlappingIntervals {
         var duration = Duration.between(startDate, endDate);
         return duration.toDays() >= intervalMaxLengthInDays;
     }
-
 }

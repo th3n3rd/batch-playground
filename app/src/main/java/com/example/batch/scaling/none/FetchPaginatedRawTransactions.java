@@ -2,7 +2,6 @@ package com.example.batch.scaling.none;
 
 import com.example.batch.payment.client.PaymentApiClient;
 import com.example.batch.payment.client.RawTransactions;
-import java.time.OffsetDateTime;
 import java.util.Iterator;
 import java.util.Objects;
 import lombok.SneakyThrows;
@@ -15,39 +14,43 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @StepScope
 @Component
-class ExtractPaginatedRawTransactions extends AbstractPaginatedDataItemReader<RawTransactions.Detail> {
+class FetchPaginatedRawTransactions extends AbstractPaginatedDataItemReader<RawTransactions.Detail> {
 
     private final PaymentApiClient paymentApiClient;
     private final String accountId;
+    private final String startDate;
+    private final String endDate;
 
-    public ExtractPaginatedRawTransactions(
-        @Value("#{jobParameters['accountId']}") String accountId,
+    public FetchPaginatedRawTransactions(
+        @Value("#{stepExecutionContext['accountId']}") String accountId,
+        @Value("#{stepExecutionContext['startDate']}") String startDate,
+        @Value("#{stepExecutionContext['endDate']}") String endDate,
         PaymentApiClient paymentApiClient
     ) {
         setName("extract-paginated-raw-transactions");
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.accountId = accountId;
         this.paymentApiClient = paymentApiClient;
     }
 
-    @SneakyThrows
     @Override
     protected Iterator<RawTransactions.Detail> doPageRead() {
-        var account = paymentApiClient.accountDetails(accountId).execute().body();
-        var fromAccountCreation = OffsetDateTime.parse(account.accountInfo.createdAt).toString();
-        var untilNow = OffsetDateTime.now().toString();
-        var responseBody = paymentApiClient
+        var rawTransactions = extractTransactions(startDate, endDate);
+        return Objects.isNull(rawTransactions)
+            ? null
+            : rawTransactions.transactionDetails.iterator();
+    }
+
+    @SneakyThrows
+    private RawTransactions extractTransactions(String fromAccountCreation, String untilNow) {
+        return paymentApiClient
             .listTransactions(
-                accountId,
-                fromAccountCreation,
-                untilNow,
+                accountId, fromAccountCreation, untilNow,
                 page,
                 pageSize
             )
             .execute()
             .body();
-
-        return Objects.isNull(responseBody)
-            ? null
-            : responseBody.transactionDetails.iterator();
     }
 }

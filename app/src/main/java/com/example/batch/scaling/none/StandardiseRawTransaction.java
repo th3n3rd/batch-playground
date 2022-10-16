@@ -8,21 +8,14 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@StepScope
 @Component
-class TransformRawTransactions implements ItemProcessor<RawTransactions.Detail, Transaction> {
-
-    private final String accountId;
-
-    public TransformRawTransactions(@Value("#{jobParameters['accountId']}") String accountId) {
-        this.accountId = accountId;
-    }
+class StandardiseRawTransaction implements ItemProcessor<RawTransactions.Detail, Transaction> {
 
     @Override
     public Transaction process(RawTransactions.Detail item) {
         return new Transaction(
             UUID.fromString(item.transactionInfo.transactionId),
-            UUID.fromString(accountId),
+            UUID.fromString(item.transactionInfo.merchantAccountId),
             item.transactionInfo.transactionAmount.currencyCode,
             item.transactionInfo.transactionAmount.value
         );
