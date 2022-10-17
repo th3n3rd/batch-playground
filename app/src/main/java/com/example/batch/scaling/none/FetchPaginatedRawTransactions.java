@@ -28,6 +28,7 @@ class FetchPaginatedRawTransactions extends AbstractPaginatedDataItemReader<RawT
         PaymentApiClient paymentApiClient
     ) {
         setName("extract-paginated-raw-transactions");
+        setPageSize(100);
         this.startDate = startDate;
         this.endDate = endDate;
         this.accountId = accountId;

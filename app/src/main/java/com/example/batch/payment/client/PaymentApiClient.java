@@ -15,7 +15,7 @@ public interface PaymentApiClient {
     Call<MerchantAccounts> listAccounts();
 
     @GET("/v1/payment/accounts/{accountId}")
-    Call<MerchantAccounts.Detail> accountDetails(
+    Call<MerchantAccountDetail> accountDetails(
         @Path("accountId") String accountId
     );
 

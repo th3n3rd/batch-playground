@@ -7,6 +7,7 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,46 +22,118 @@ class TestDataLoader implements ApplicationRunner {
 
     private final MerchantAccounts accounts;
     private final Transactions transactions;
+    private final static UUID LargeAccountId = UUID.fromString("1a77305c-6404-4438-bb0c-274921184596");;
 
     @Override
     public void run(ApplicationArguments args) {
         var faker = new Faker();
-        var testAccounts = new ArrayList<MerchantAccount>();
-        var testTransactions = new ArrayList<Transaction>();
-        var numberOfAccounts = 100;
-        var transactionsPerAccount = 1000;
+        var numberOfSmallAccounts = 100;
+        var transactionsPerSmallAccount = 1000;
         var minAmount = -1000;
         var maxAmount = 1000;
-        var pastDate = OffsetDateTime.parse("2022-01-01T00:00:00+00:00");
-        var presentDate = pastDate.plusDays(MaxDateRangeInDays);
-        var futureDate = presentDate.plusDays(MaxDateRangeInDays * 6);
-        log.info("Loading account and transactions for testing");
-        for (int i = 0; i < numberOfAccounts; i++) {
-            var accountCreation = randomDateBetween(faker, pastDate, presentDate);
+        var now = OffsetDateTime.now();
+        var transactionsEarliestDate = now.minusDays(MaxDateRangeInDays * 6);
+        var accountsEarliestDate = transactionsEarliestDate.minusDays(MaxDateRangeInDays * 8);
+
+        loadOneLargeAccount(
+            faker,
+            minAmount,
+            maxAmount,
+            transactionsEarliestDate,
+            accountsEarliestDate
+        );
+
+        var smallAccountId = loadManySmallAccounts(
+            faker,
+            numberOfSmallAccounts,
+            transactionsPerSmallAccount,
+            minAmount,
+            maxAmount,
+            transactionsEarliestDate,
+            accountsEarliestDate
+        );
+
+        log.info("The only large account id for testing is %s".formatted(LargeAccountId));
+        log.info("The first small account id for testing is %s".formatted(smallAccountId));
+        log.info("Transactions time range span from %s to %s".formatted(transactionsEarliestDate, now));
+        log.info("Test data loading is now complete");
+    }
+
+    private UUID loadManySmallAccounts(
+        Faker faker,
+        int numberOfSmallAccounts,
+        int transactionsPerAccount,
+        int minAmount,
+        int maxAmount,
+        OffsetDateTime transactionsEarliestDate,
+        OffsetDateTime accountsEarliestDate
+    ) {
+        var smallAccounts = new ArrayList<MerchantAccount>();
+        var smallTransactions = new ArrayList<Transaction>();
+        log.info("Loading small accounts with %s transactions across many intervals".formatted(transactionsPerAccount));
+        for (int i = 0; i < numberOfSmallAccounts; i++) {
+            var accountCreation = randomDateBetween(faker, accountsEarliestDate, transactionsEarliestDate);
             var account = new MerchantAccount(
                 UUID.randomUUID(),
                 accountCreation
             );
-            testAccounts.add(account);
-            for (int j = 0; j < transactionsPerAccount; j++) {
-                testTransactions.add(
-                    new Transaction(
-                        UUID.randomUUID(),
-                        account.getAccountId(),
-                        new Amount(
-                            "USD",
-                            randomAmountValue(faker, minAmount, maxAmount)
-                        ),
-                        randomDateBetween(faker, accountCreation, futureDate)
-                    ));
-            }
+            smallAccounts.add(account);
+            accumulateTransactions(faker,
+                account,
+                minAmount,
+                maxAmount,
+                transactionsPerAccount,
+                smallTransactions
+            );
         }
-        accounts.saveAllAndFlush(testAccounts);
-        transactions.saveAllAndFlush(testTransactions);
-        log.info("Loaded %s accounts for testing".formatted(numberOfAccounts));
-        log.info("Loaded a total of %s transactions for testing, %s per account".formatted(numberOfAccounts * transactionsPerAccount, transactionsPerAccount));
-        log.info("The first loaded account id for testing was %s".formatted(testAccounts.get(0).getAccountId()));
-        log.info("Transactions time range span from %s to %s".formatted(presentDate, futureDate));
+        accounts.saveAllAndFlush(smallAccounts);
+        transactions.saveAllAndFlush(smallTransactions);
+        var firstSmallAccountId = smallAccounts.get(0).getAccountId();
+        smallAccounts.clear();
+        smallTransactions.clear();
+        log.info("Loaded %s small accounts for testing".formatted(numberOfSmallAccounts));
+        return firstSmallAccountId;
+    }
+
+    private void loadOneLargeAccount(Faker faker, int minAmount, int maxAmount, OffsetDateTime transactionsEarliestDate, OffsetDateTime accountsEarliestDate) {
+        log.info("Loading large account with 10K+ transactions in a date interval");
+        var largeTransactions = new ArrayList<Transaction>();
+        var accountCreation = randomDateBetween(faker, accountsEarliestDate, transactionsEarliestDate);
+        var largeAccount = new MerchantAccount(
+            LargeAccountId,
+            accountCreation
+        );
+        accumulateTransactions(faker,
+            largeAccount, minAmount, maxAmount,
+            100_000,
+            largeTransactions
+        );
+        accounts.saveAndFlush(largeAccount);
+        transactions.saveAllAndFlush(largeTransactions);
+        largeTransactions.clear();
+        log.info("Large account loaded");
+    }
+
+    private static void accumulateTransactions(
+        Faker faker,
+        MerchantAccount account,
+        int minAmount,
+        int maxAmount,
+        int numberOfTransactions,
+        List<Transaction> accumulator
+    ) {
+        for (int i = 0; i < numberOfTransactions; i++) {
+            accumulator.add(
+                new Transaction(
+                    UUID.randomUUID(),
+                    account.getAccountId(),
+                    new Amount(
+                        "USD",
+                        randomAmountValue(faker, minAmount, maxAmount)
+                    ),
+                    randomDateBetween(faker, account.getCreatedAt(), OffsetDateTime.now())
+                ));
+        }
     }
 
     private static Double randomAmountValue(Faker faker, int minAmount, int maxAmount) {

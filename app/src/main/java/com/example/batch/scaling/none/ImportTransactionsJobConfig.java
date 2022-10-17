@@ -28,7 +28,7 @@ class ImportTransactionsJobConfig {
         PersistProcessedTransactions persistProcessedTransactions
     ) {
         var slave = steps.get("%s:slave".formatted(Name))
-            .<RawTransactions.Detail, Transaction>chunk(1)
+            .<RawTransactions.Detail, Transaction>chunk(100)
             .reader(fetchPaginatedRawTransactions)
             .processor(standardiseRawTransaction)
             .writer(persistProcessedTransactions)
