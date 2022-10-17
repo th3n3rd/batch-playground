@@ -1,7 +1,6 @@
 package com.example.batch.scaling.none;
 
 import com.example.batch.payment.Interval;
-import com.example.batch.payment.NonOverlappingIntervals;
 import com.example.batch.payment.client.PaymentApiClient;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
@@ -51,11 +50,7 @@ class PartitionByDateIntervals implements Partitioner {
     }
 
     private List<Interval> computeImportIntervals() {
-        return new NonOverlappingIntervals(
-            accountCreationDate(),
-            OffsetDateTime.now(),
-            maxIntervalInDays
-        ).toList();
+        return Interval.between(accountCreationDate(), OffsetDateTime.now()).split(maxIntervalInDays);
     }
 
     @SneakyThrows

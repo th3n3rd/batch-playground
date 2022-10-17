@@ -3,6 +3,7 @@ package com.example.batch.payment;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class NonOverlappingIntervalsTests {
@@ -11,9 +12,9 @@ class NonOverlappingIntervalsTests {
     void emptyIntervalsIfSameDates() {
         var same = date("2022-10-01T00:00:00Z");
 
-        var intervals = new NonOverlappingIntervals(same, same, 10);
+        var intervals = Interval.between(same, same).split(10);
 
-        assertThat(intervals.toList()).isEmpty();
+        assertThat(intervals).isEmpty();
     }
 
     @Test
@@ -21,9 +22,9 @@ class NonOverlappingIntervalsTests {
         var from = date("2022-10-01T00:00:00Z");
         var to = date("2022-10-10T00:00:00Z");
 
-        var intervals = new NonOverlappingIntervals(from, to, 10);
+        var intervals = Interval.between(from, to).split(10);
 
-        assertThat(intervals.toList()).containsOnly(
+        assertThat(intervals).containsOnly(
             Interval.between(from, to)
         );
     }
@@ -33,9 +34,9 @@ class NonOverlappingIntervalsTests {
         var from = date("2022-10-01T00:00:00Z");
         var to = date("2022-10-11T00:00:00Z");
 
-        var intervals = new NonOverlappingIntervals(from, to, 10);
+        var intervals = Interval.between(from, to).split(10);
 
-        assertThat(intervals.toList()).containsOnly(
+        assertThat(intervals).containsOnly(
             Interval.between(from, date("2022-10-11T00:00:00Z")),
             Interval.between(date("2022-10-11T00:00:01Z"), to)
         );
@@ -46,9 +47,9 @@ class NonOverlappingIntervalsTests {
         var from = date("2022-10-01T00:00:00Z");
         var to = date("2022-10-31T00:00:00Z");
 
-        var intervals = new NonOverlappingIntervals(from, to, 10);
+        var intervals = Interval.between(from, to).split(10);
 
-        assertThat(intervals.toList()).containsOnly(
+        assertThat(intervals).containsOnly(
             Interval.between(from, date("2022-10-11T00:00:00Z")),
             Interval.between(date("2022-10-11T00:00:01Z"), date("2022-10-21T00:00:01Z")),
             Interval.between(date("2022-10-21T00:00:02Z"), to)
