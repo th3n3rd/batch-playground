@@ -32,30 +32,31 @@ class TestDataLoader implements ApplicationRunner {
         var minAmount = -1000;
         var maxAmount = 1000;
         var now = OffsetDateTime.now();
-        var transactionsEarliestDate = now.minusDays(MaxDateRangeInDays * 6);
-        var accountsEarliestDate = transactionsEarliestDate.minusDays(MaxDateRangeInDays * 8);
+        var accountLatestDate = now.minusDays(MaxDateRangeInDays * 6);
+        var accountsEarliestDate = accountLatestDate.minusDays(MaxDateRangeInDays * 2);
 
         loadOneLargeAccount(
             faker,
+            100_000,
             minAmount,
             maxAmount,
-            transactionsEarliestDate,
-            accountsEarliestDate
+            accountsEarliestDate,
+            accountLatestDate
         );
 
-        var smallAccountId = loadManySmallAccounts(
+        var firstSmallAccountId = loadManySmallAccounts(
             faker,
             numberOfSmallAccounts,
             transactionsPerSmallAccount,
             minAmount,
             maxAmount,
-            transactionsEarliestDate,
-            accountsEarliestDate
+            accountsEarliestDate,
+            accountLatestDate
         );
 
         log.info("The only large account id for testing is %s".formatted(LargeAccountId));
-        log.info("The first small account id for testing is %s".formatted(smallAccountId));
-        log.info("Transactions time range span from %s to %s".formatted(transactionsEarliestDate, now));
+        log.info("The first small account id for testing is %s".formatted(firstSmallAccountId));
+        log.info("Transactions time range span from %s to %s".formatted(accountLatestDate, now));
         log.info("Test data loading is now complete");
     }
 
@@ -65,24 +66,27 @@ class TestDataLoader implements ApplicationRunner {
         int transactionsPerAccount,
         int minAmount,
         int maxAmount,
-        OffsetDateTime transactionsEarliestDate,
-        OffsetDateTime accountsEarliestDate
+        OffsetDateTime accountsEarliestDate,
+        OffsetDateTime accountLatestDate
     ) {
         var smallAccounts = new ArrayList<MerchantAccount>();
         var smallTransactions = new ArrayList<Transaction>();
         log.info("Loading small accounts with %s transactions across many intervals".formatted(transactionsPerAccount));
         for (int i = 0; i < numberOfSmallAccounts; i++) {
-            var accountCreation = randomDateBetween(faker, accountsEarliestDate, transactionsEarliestDate);
+            var accountCreation = randomDateBetween(faker, accountsEarliestDate, accountLatestDate);
             var account = new MerchantAccount(
                 UUID.randomUUID(),
                 accountCreation
             );
             smallAccounts.add(account);
-            accumulateTransactions(faker,
+            accumulateTransactions(
+                faker,
                 account,
                 minAmount,
                 maxAmount,
                 transactionsPerAccount,
+                account.getCreatedAt(),
+                OffsetDateTime.now(), // spanning across account creation and now
                 smallTransactions
             );
         }
@@ -95,17 +99,28 @@ class TestDataLoader implements ApplicationRunner {
         return firstSmallAccountId;
     }
 
-    private void loadOneLargeAccount(Faker faker, int minAmount, int maxAmount, OffsetDateTime transactionsEarliestDate, OffsetDateTime accountsEarliestDate) {
+    private void loadOneLargeAccount(
+        Faker faker,
+        int numberOfTransactions,
+        int minAmount,
+        int maxAmount,
+        OffsetDateTime accountsEarliestDate,
+        OffsetDateTime accountLatestDate
+    ) {
         log.info("Loading large account with 10K+ transactions in a date interval");
         var largeTransactions = new ArrayList<Transaction>();
-        var accountCreation = randomDateBetween(faker, accountsEarliestDate, transactionsEarliestDate);
+        var accountCreation = randomDateBetween(faker, accountsEarliestDate, accountLatestDate);
         var largeAccount = new MerchantAccount(
             LargeAccountId,
             accountCreation
         );
         accumulateTransactions(faker,
-            largeAccount, minAmount, maxAmount,
-            100_000,
+            largeAccount,
+            minAmount,
+            maxAmount,
+            numberOfTransactions,
+            largeAccount.getCreatedAt(),
+            accountLatestDate.plusDays(MaxDateRangeInDays * 5), // restrict the date range to have 10K+ per interval
             largeTransactions
         );
         accounts.saveAndFlush(largeAccount);
@@ -120,6 +135,8 @@ class TestDataLoader implements ApplicationRunner {
         int minAmount,
         int maxAmount,
         int numberOfTransactions,
+        OffsetDateTime transactionEarliest,
+        OffsetDateTime transactionLatest,
         List<Transaction> accumulator
     ) {
         for (int i = 0; i < numberOfTransactions; i++) {
@@ -131,7 +148,7 @@ class TestDataLoader implements ApplicationRunner {
                         "USD",
                         randomAmountValue(faker, minAmount, maxAmount)
                     ),
-                    randomDateBetween(faker, account.getCreatedAt(), OffsetDateTime.now())
+                    randomDateBetween(faker, transactionEarliest, transactionLatest)
                 ));
         }
     }

@@ -15,6 +15,13 @@ public class Interval {
         return new Interval(startDate, endDate);
     }
 
+    public List<Interval> splitInHalf() {
+        var duration = Duration.between(startDate, endDate);
+        var firstHalf = intervalFrom(startDate, (int) duration.toDays() / 2);
+        var secondHalf = Interval.between(firstHalf.endDate.plusSeconds(1), endDate);
+        return List.of(firstHalf, secondHalf);
+    }
+
     public List<Interval> split(int intervalLength)  {
         return checkAndSplit(startDate, endDate, intervalLength);
     }
