@@ -2,7 +2,12 @@ package com.example.batch.scaling.none;
 
 import com.example.batch.payment.Transaction;
 import com.example.batch.payment.client.RawTransactions;
+import com.example.batch.payment.importing.FetchPaginatedRawTransactions;
+import com.example.batch.payment.importing.PartitionByDateIntervals;
+import com.example.batch.payment.importing.PersistProcessedTransactions;
+import com.example.batch.payment.importing.StandardiseRawTransaction;
 import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.Job;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -21,28 +26,28 @@ class ImportTransactionsJobConfig {
     static final String Name = "import-transactions-scaling-none";
 
     @Bean
-    org.springframework.batch.core.Job importTransactionsJob(
+    Job importTransactionsJob(
         PartitionByDateIntervals partitionByDateIntervals,
         FetchPaginatedRawTransactions fetchPaginatedRawTransactions,
         StandardiseRawTransaction standardiseRawTransaction,
         PersistProcessedTransactions persistProcessedTransactions
     ) {
-        var slave = steps.get("%s:slave".formatted(Name))
+        var worker = steps.get("%s:worker".formatted(Name))
             .<RawTransactions.Detail, Transaction>chunk(100)
             .reader(fetchPaginatedRawTransactions)
             .processor(standardiseRawTransaction)
             .writer(persistProcessedTransactions)
             .build();
 
-        var master = steps.get("%s:master".formatted(Name))
-            .partitioner(slave.getName(), partitionByDateIntervals)
-            .step(slave)
+        var manager = steps.get("%s:manager".formatted(Name))
+            .partitioner(worker.getName(), partitionByDateIntervals)
+            .step(worker)
             .gridSize(1)
             .taskExecutor(new SyncTaskExecutor())
             .build();
 
         return jobs.get(Name)
-            .start(master)
+            .start(manager)
             .build();
     }
 }

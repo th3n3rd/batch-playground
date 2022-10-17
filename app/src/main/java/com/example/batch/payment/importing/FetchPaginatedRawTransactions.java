@@ -1,4 +1,4 @@
-package com.example.batch.scaling.none;
+package com.example.batch.payment.importing;
 
 import com.example.batch.payment.client.PaymentApiClient;
 import com.example.batch.payment.client.RawTransactions;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @StepScope
 @Component
-class FetchPaginatedRawTransactions extends AbstractPaginatedDataItemReader<RawTransactions.Detail> {
+public class FetchPaginatedRawTransactions extends AbstractPaginatedDataItemReader<RawTransactions.Detail> {
 
     private final PaymentApiClient paymentApiClient;
     private final String accountId;

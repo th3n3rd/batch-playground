@@ -1,7 +1,7 @@
-package com.example.batch.scaling.none;
+package com.example.batch.payment.importing;
 
-import com.example.batch.payment.ImportIntervals;
-import com.example.batch.payment.Interval;
+import com.example.batch.payment.importing.ImportIntervals;
+import com.example.batch.payment.importing.Interval;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @StepScope
 @Component
-class PartitionByDateIntervals implements Partitioner {
+public class PartitionByDateIntervals implements Partitioner {
 
     private final ImportIntervals importIntervals;
     private final String accountId;

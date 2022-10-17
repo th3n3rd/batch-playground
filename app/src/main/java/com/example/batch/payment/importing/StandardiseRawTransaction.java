@@ -1,4 +1,4 @@
-package com.example.batch.scaling.none;
+package com.example.batch.payment.importing;
 
 import com.example.batch.payment.Transaction;
 import com.example.batch.payment.client.RawTransactions;
@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-class StandardiseRawTransaction implements ItemProcessor<RawTransactions.Detail, Transaction> {
+public class StandardiseRawTransaction implements ItemProcessor<RawTransactions.Detail, Transaction> {
 
     @Override
     public Transaction process(RawTransactions.Detail item) {

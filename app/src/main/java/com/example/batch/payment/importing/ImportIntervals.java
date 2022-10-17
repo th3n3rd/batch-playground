@@ -1,6 +1,5 @@
-package com.example.batch.payment;
+package com.example.batch.payment.importing;
 
-import com.example.batch.payment.Interval;
 import com.example.batch.payment.client.Errors;
 import com.example.batch.payment.client.MerchantAccountDetail;
 import com.example.batch.payment.client.PaymentApiClient;

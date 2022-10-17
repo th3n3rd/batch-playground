@@ -2,6 +2,7 @@ package com.example.batch.payment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.example.batch.payment.importing.Interval;
 import java.time.OffsetDateTime;
 import org.junit.jupiter.api.Test;
 
