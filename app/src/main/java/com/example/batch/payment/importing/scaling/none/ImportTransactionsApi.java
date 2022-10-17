@@ -1,4 +1,4 @@
-package com.example.batch.scaling.none;
+package com.example.batch.payment.importing.scaling.none;
 
 import com.example.batch.utils.Jobs;
 import java.util.Map;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-class ImportTransactionsApi {
+public class ImportTransactionsApi {
 
     private final Jobs jobs;
     private final JobLauncher jobLauncher;

@@ -1,4 +1,4 @@
-package com.example.batch.scaling.none;
+package com.example.batch.payment.importing.scaling.none;
 
 import com.example.batch.payment.Transaction;
 import com.example.batch.payment.client.RawTransactions;
@@ -18,7 +18,7 @@ import org.springframework.core.task.SyncTaskExecutor;
 @Configuration
 @RequiredArgsConstructor
 @EnableBatchProcessing
-class ImportTransactionsJobConfig {
+public class ImportTransactionsJobConfig {
 
     private final JobBuilderFactory jobs;
     private final StepBuilderFactory steps;

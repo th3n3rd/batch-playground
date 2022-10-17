@@ -1,4 +1,4 @@
-package com.example.batch.scaling;
+package com.example.batch.payment.importing;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
