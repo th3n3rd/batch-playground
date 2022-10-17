@@ -28,16 +28,18 @@ class TestDataLoader implements ApplicationRunner {
         var testAccounts = new ArrayList<MerchantAccount>();
         var testTransactions = new ArrayList<Transaction>();
         var numberOfAccounts = 100;
-        var transactionsPerAccount = 100;
+        var transactionsPerAccount = 1000;
         var minAmount = -1000;
         var maxAmount = 1000;
         var pastDate = OffsetDateTime.parse("2022-01-01T00:00:00+00:00");
-        var presentDate = pastDate.plusDays(MaxDateRangeInDays + 1);
-        var futureDate = presentDate.plusDays(MaxDateRangeInDays + 1);
+        var presentDate = pastDate.plusDays(MaxDateRangeInDays);
+        var futureDate = presentDate.plusDays(MaxDateRangeInDays * 6);
+        log.info("Loading account and transactions for testing");
         for (int i = 0; i < numberOfAccounts; i++) {
+            var accountCreation = randomDateBetween(faker, pastDate, presentDate);
             var account = new MerchantAccount(
                 UUID.randomUUID(),
-                randomDateBetween(faker, pastDate, presentDate)
+                accountCreation
             );
             testAccounts.add(account);
             for (int j = 0; j < transactionsPerAccount; j++) {
@@ -49,7 +51,7 @@ class TestDataLoader implements ApplicationRunner {
                             "USD",
                             randomAmountValue(faker, minAmount, maxAmount)
                         ),
-                        randomDateBetween(faker, presentDate, futureDate)
+                        randomDateBetween(faker, accountCreation, futureDate)
                     ));
             }
         }
