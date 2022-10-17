@@ -18,7 +18,7 @@ class NonOverlappingIntervalsTests {
     }
 
     @Test
-    void oneIntervalBecauseBelowMaxLength() {
+    void noSplitWhenDistanceBelowMaxLength() {
         var from = date("2022-10-01T00:00:00Z");
         var to = date("2022-10-10T00:00:00Z");
 
