@@ -10,6 +10,9 @@ Most of the tests in `app` are end-to-end (journey tests) and require the `exter
 ./mvnw -pl external-system spring-boot:run
 ```
 
+Note: the external-system application will run with `chaos-monkey` enabled by default to simulate transient failures at runtime.
+This is done in order to harness the robustness of the batch application.
+
 And then in another terminal:
 
 ```

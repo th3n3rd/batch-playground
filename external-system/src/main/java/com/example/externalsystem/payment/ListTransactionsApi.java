@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -68,10 +69,12 @@ class ListTransactionsApi {
         }
     }
 
+    @Order(1)
     @ExceptionHandler(ResultSetTooLargeException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "Result set too large")
     void handleResultSetTooLarge() {}
 
+    @Order(1)
     @ExceptionHandler(DateRangeTooFarApartException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "Date range too far apart")
     void handleDateRangeTooFarApart() {}
