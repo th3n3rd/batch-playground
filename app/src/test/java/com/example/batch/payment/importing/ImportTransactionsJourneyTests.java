@@ -5,7 +5,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 import com.example.batch.payment.Transactions;
 import com.example.batch.payment.client.MerchantAccountDetail;
-import com.example.batch.payment.client.PaymentApiClient;
+import com.example.batch.payment.client.PaymentService;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.SneakyThrows;
@@ -25,7 +25,7 @@ abstract public class ImportTransactionsJourneyTests {
     protected WebTestClient client;
 
     @Autowired
-    protected PaymentApiClient paymentApiClient;
+    protected PaymentService paymentService;
 
     @Autowired
     private Transactions transactions;
@@ -54,15 +54,11 @@ abstract public class ImportTransactionsJourneyTests {
     private long countTransactionsFromSource(MerchantAccountDetail account) {
         var fromAccountCreation = account.accountInfo.createdAt;
         var untilNow = OffsetDateTime.now().toString();
-        return paymentApiClient
-            .countTransactions(
-                account.accountInfo.accountId,
-                fromAccountCreation,
-                untilNow
-            )
-            .execute()
-            .body()
-            .totalItems;
+        return paymentService.countTransactions(
+            account.accountInfo.accountId,
+            fromAccountCreation,
+            untilNow
+        );
     }
 
     private long countTransactions(MerchantAccountDetail account) {
@@ -71,10 +67,8 @@ abstract public class ImportTransactionsJourneyTests {
 
     @SneakyThrows
     private MerchantAccountDetail randomSmallAccountFromSource() {
-        return paymentApiClient.listAccounts()
-            .execute()
-            .body()
-            .accountDetails
+        return paymentService
+            .listAccounts()
             .stream()
             .filter(it -> !it.accountInfo.accountId.equals(largeAccountId))
             .findAny()
@@ -83,9 +77,7 @@ abstract public class ImportTransactionsJourneyTests {
 
     @SneakyThrows
     private MerchantAccountDetail largeAccountFromSource() {
-        return paymentApiClient.accountDetails(largeAccountId)
-            .execute()
-            .body();
+        return paymentService.accountDetail(largeAccountId);
     }
 
     abstract protected void importTransactions(MerchantAccountDetail account);

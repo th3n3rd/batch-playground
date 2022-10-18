@@ -1,8 +1,8 @@
 package com.example.batch.payment.importing;
 
-import com.example.batch.payment.client.Errors;
 import com.example.batch.payment.client.MerchantAccountDetail;
-import com.example.batch.payment.client.PaymentApiClient;
+import com.example.batch.payment.client.PaymentService;
+import com.example.batch.payment.client.ResultSetTooLargeException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ImportIntervals {
 
-    private final PaymentApiClient paymentApiClient;
+    private final PaymentService paymentService;
 
     public List<Interval> findAllBy(String accountId, int maxIntervalInDays) {
         var account = accountDetail(accountId);
@@ -43,25 +43,22 @@ public class ImportIntervals {
 
     @SneakyThrows
     private MerchantAccountDetail accountDetail(String accountId) {
-        return paymentApiClient.accountDetails(accountId).execute().body();
+        return paymentService.accountDetail(accountId);
     }
 
     @SneakyThrows
     private boolean isResultSetTooLarge(MerchantAccountDetail account, Interval interval) {
-        var response = paymentApiClient
-            .listTransactions(
+        try {
+            paymentService.listTransactions(
                 account.accountInfo.accountId,
                 interval.getStartDate().toString(),
                 interval.getEndDate().toString(),
                 1,
                 1
-            )
-            .execute();
-
-        if (response.isSuccessful()) {
+            );
             return false;
+        } catch (ResultSetTooLargeException e) {
+            return true;
         }
-
-        return Errors.isResultSetTooLarge(response);
     }
 }

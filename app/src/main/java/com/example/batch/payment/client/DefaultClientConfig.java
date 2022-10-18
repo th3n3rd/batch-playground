@@ -6,7 +6,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import org.springframework.context.annotation.Bean;
 
 @Slf4j
-class LoggingClientConfig {
+class DefaultClientConfig {
 
     @Bean
     Interceptor loggingInterceptor() {

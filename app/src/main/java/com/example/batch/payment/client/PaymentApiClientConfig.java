@@ -6,6 +6,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableRetrofitClients(
     clients = PaymentApiClient.class,
-    defaultConfiguration = LoggingClientConfig.class
+    defaultConfiguration = DefaultClientConfig.class
 )
 class PaymentApiClientConfig {}

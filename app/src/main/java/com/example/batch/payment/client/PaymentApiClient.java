@@ -23,13 +23,6 @@ public interface PaymentApiClient {
     Call<RawTransactions> listTransactions(
         @Path("accountId") String accountId,
         @Query("startDate") String startDate,
-        @Query("endDate") String endDate
-    );
-
-    @GET("/v1/payment/accounts/{accountId}/transactions")
-    Call<RawTransactions> listTransactions(
-        @Path("accountId") String accountId,
-        @Query("startDate") String startDate,
         @Query("endDate") String endDate,
         @Query("page") int page,
         @Query("pageSize") int pageSize

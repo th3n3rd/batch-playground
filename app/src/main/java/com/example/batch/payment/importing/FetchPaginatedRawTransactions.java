@@ -1,8 +1,9 @@
 package com.example.batch.payment.importing;
 
-import com.example.batch.payment.client.PaymentApiClient;
+import com.example.batch.payment.client.PaymentService;
 import com.example.batch.payment.client.RawTransactions;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class FetchPaginatedRawTransactions extends AbstractPaginatedDataItemReader<RawTransactions.Detail> {
 
-    private final PaymentApiClient paymentApiClient;
+    private final PaymentService paymentService;
     private final String accountId;
     private final String startDate;
     private final String endDate;
@@ -25,33 +26,27 @@ public class FetchPaginatedRawTransactions extends AbstractPaginatedDataItemRead
         @Value("#{stepExecutionContext['accountId']}") String accountId,
         @Value("#{stepExecutionContext['startDate']}") String startDate,
         @Value("#{stepExecutionContext['endDate']}") String endDate,
-        PaymentApiClient paymentApiClient
+        PaymentService paymentService
     ) {
         setName("extract-paginated-raw-transactions");
         setPageSize(100);
         this.startDate = startDate;
         this.endDate = endDate;
         this.accountId = accountId;
-        this.paymentApiClient = paymentApiClient;
+        this.paymentService = paymentService;
     }
 
     @Override
     protected Iterator<RawTransactions.Detail> doPageRead() {
-        var rawTransactions = extractTransactions(startDate, endDate);
-        return Objects.isNull(rawTransactions)
-            ? null
-            : rawTransactions.transactionDetails.iterator();
+        return extractTransactions(startDate, endDate).iterator();
     }
 
     @SneakyThrows
-    private RawTransactions extractTransactions(String fromAccountCreation, String untilNow) {
-        return paymentApiClient
-            .listTransactions(
-                accountId, fromAccountCreation, untilNow,
-                page,
-                pageSize
-            )
-            .execute()
-            .body();
+    private List<RawTransactions.Detail> extractTransactions(String fromAccountCreation, String untilNow) {
+        return paymentService.listTransactions(
+            accountId, fromAccountCreation, untilNow,
+            page,
+            pageSize
+        );
     }
 }
