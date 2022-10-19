@@ -1,5 +1,7 @@
 package com.example.batch.payment.client;
 
+import static com.example.batch.payment.client.PaymentConfig.ResiliencyBackend;
+
 import io.github.resilience4j.retry.annotation.Retry;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +14,7 @@ public class PaymentService {
 
     private final PaymentApiClient apiClient;
 
-    @Retry(name = "listAccounts")
+    @Retry(name = ResiliencyBackend)
     @SneakyThrows
     public List<MerchantAccountDetail> listAccounts() {
         var response = apiClient.listAccounts().execute();
@@ -24,7 +26,7 @@ public class PaymentService {
         throw new UnknownPaymentErrorException();
     }
 
-    @Retry(name = "accountDetail")
+    @Retry(name = ResiliencyBackend)
     @SneakyThrows
     public MerchantAccountDetail accountDetail(String accountId) {
         var response = apiClient.accountDetails(accountId).execute();
@@ -36,7 +38,7 @@ public class PaymentService {
         throw new UnknownPaymentErrorException();
     }
 
-    @Retry(name = "listTransactions")
+    @Retry(name = ResiliencyBackend)
     @SneakyThrows
     public List<RawTransactions.Detail> listTransactions(
         String accountId,
@@ -65,7 +67,7 @@ public class PaymentService {
         throw new UnknownPaymentErrorException();
     }
 
-    @Retry(name = "countTransactions")
+    @Retry(name = ResiliencyBackend)
     @SneakyThrows
     public long countTransactions(
         String accountId,
