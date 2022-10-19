@@ -1,7 +1,7 @@
 package com.example.batch.payment.importing;
 
 import com.example.batch.payment.client.MerchantAccountDetail;
-import com.example.batch.payment.client.PaymentService;
+import com.example.batch.payment.client.ExternalPaymentService;
 import com.example.batch.payment.client.ResultSetTooLargeException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ImportIntervals {
 
-    private final PaymentService paymentService;
+    private final ExternalPaymentService externalPaymentService;
 
     public List<Interval> findAllBy(String accountId, int maxIntervalInDays) {
         var account = accountDetail(accountId);
@@ -43,13 +43,13 @@ public class ImportIntervals {
 
     @SneakyThrows
     private MerchantAccountDetail accountDetail(String accountId) {
-        return paymentService.accountDetail(accountId);
+        return externalPaymentService.accountDetail(accountId);
     }
 
     @SneakyThrows
     private boolean isResultSetTooLarge(MerchantAccountDetail account, Interval interval) {
         try {
-            paymentService.listTransactions(
+            externalPaymentService.listTransactions(
                 account.accountInfo.accountId,
                 interval.getStartDate().toString(),
                 interval.getEndDate().toString(),

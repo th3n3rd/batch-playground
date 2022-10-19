@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
     clients = PaymentApiClient.class,
     defaultConfiguration = DefaultClientConfig.class
 )
-class PaymentConfig {
+class ExternalPaymentConfig {
 
     public final static String ResiliencyBackend = "payment";
 

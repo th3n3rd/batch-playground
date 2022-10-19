@@ -5,7 +5,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 import com.example.batch.payment.Transactions;
 import com.example.batch.payment.client.MerchantAccountDetail;
-import com.example.batch.payment.client.PaymentService;
+import com.example.batch.payment.client.ExternalPaymentService;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.SneakyThrows;
@@ -25,7 +25,7 @@ abstract public class ImportTransactionsJourneyTests {
     protected WebTestClient client;
 
     @Autowired
-    protected PaymentService paymentService;
+    protected ExternalPaymentService externalPaymentService;
 
     @Autowired
     private Transactions transactions;
@@ -54,7 +54,7 @@ abstract public class ImportTransactionsJourneyTests {
     private long countTransactionsFromSource(MerchantAccountDetail account) {
         var fromAccountCreation = account.accountInfo.createdAt;
         var untilNow = OffsetDateTime.now().toString();
-        return paymentService.countTransactions(
+        return externalPaymentService.countTransactions(
             account.accountInfo.accountId,
             fromAccountCreation,
             untilNow
@@ -67,7 +67,7 @@ abstract public class ImportTransactionsJourneyTests {
 
     @SneakyThrows
     private MerchantAccountDetail randomSmallAccountFromSource() {
-        return paymentService
+        return externalPaymentService
             .listAccounts()
             .stream()
             .filter(it -> !it.accountInfo.accountId.equals(largeAccountId))
@@ -77,7 +77,7 @@ abstract public class ImportTransactionsJourneyTests {
 
     @SneakyThrows
     private MerchantAccountDetail largeAccountFromSource() {
-        return paymentService.accountDetail(largeAccountId);
+        return externalPaymentService.accountDetail(largeAccountId);
     }
 
     abstract protected void importTransactions(MerchantAccountDetail account);

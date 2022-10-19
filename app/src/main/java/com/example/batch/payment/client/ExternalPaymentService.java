@@ -1,6 +1,6 @@
 package com.example.batch.payment.client;
 
-import static com.example.batch.payment.client.PaymentConfig.ResiliencyBackend;
+import static com.example.batch.payment.client.ExternalPaymentConfig.ResiliencyBackend;
 
 import io.github.resilience4j.retry.annotation.Retry;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class PaymentService {
+public class ExternalPaymentService {
 
     private final PaymentApiClient apiClient;
 
