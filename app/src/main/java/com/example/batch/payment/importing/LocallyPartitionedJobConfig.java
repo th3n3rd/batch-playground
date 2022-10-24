@@ -1,4 +1,4 @@
-package com.example.batch.payment.importing.scaling.none;
+package com.example.batch.payment.importing;
 
 import com.example.batch.payment.Transaction;
 import com.example.batch.payment.client.RawTransactions;
@@ -12,40 +12,41 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.task.SyncTaskExecutor;
 
+@Profile("local")
 @Configuration
 @RequiredArgsConstructor
 @EnableBatchProcessing
-public class ImportTransactionsJobConfig {
+public class LocallyPartitionedJobConfig {
 
-    private final JobBuilderFactory jobs;
+    public static final String JobName = "import-transactions-locally-partitioned";
 
-    static final String Name = "import-transactions-scaling-none";
-
-    @Bean
-    Job importTransactionsJob(@Qualifier("manager") Step manager) {
-        return jobs.get(Name)
-            .start(manager)
-            .build();
-    }
-
+    @Profile("local")
     @Configuration
     @RequiredArgsConstructor
     static class ManagerConfig {
 
+        private final JobBuilderFactory jobs;
         private final StepBuilderFactory steps;
+
+        @Bean
+        Job importTransactionsJob(@Qualifier("manager") Step manager) {
+            return jobs.get(JobName)
+                .start(manager)
+                .build();
+        }
 
         @Bean
         public Step manager(
             PartitionByDateIntervals partitionByDateIntervals,
             @Qualifier("worker") Step worker
         ) {
-            return steps.get("%s:manager".formatted(Name))
+            return steps.get("%s:manager".formatted(JobName))
                 .partitioner(worker.getName(), partitionByDateIntervals)
                 .step(worker)
                 .gridSize(1)
@@ -54,6 +55,7 @@ public class ImportTransactionsJobConfig {
         }
     }
 
+    @Profile("local")
     @Configuration
     @RequiredArgsConstructor
     static class WorkerConfig {
@@ -66,7 +68,7 @@ public class ImportTransactionsJobConfig {
             StandardiseRawTransaction standardiseRawTransaction,
             PersistProcessedTransactions persistProcessedTransactions
         ) {
-            return steps.get("%s:worker".formatted(Name))
+            return steps.get("%s:worker".formatted(JobName))
                 .<RawTransactions.Detail, Transaction>chunk(100)
                 .reader(fetchPaginatedRawTransactions)
                 .processor(standardiseRawTransaction)

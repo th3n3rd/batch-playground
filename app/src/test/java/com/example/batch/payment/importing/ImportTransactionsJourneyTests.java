@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import com.example.batch.payment.Transactions;
-import com.example.batch.payment.client.MerchantAccountDetail;
 import com.example.batch.payment.client.ExternalPaymentService;
+import com.example.batch.payment.client.MerchantAccountDetail;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.SneakyThrows;
