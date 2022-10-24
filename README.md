@@ -13,6 +13,15 @@ Most of the tests in `app` are end-to-end (journey tests) and require the `exter
 Note: the external-system application will run with `chaos-monkey` enabled by default to simulate transient failures at runtime.
 This is done in order to harness the robustness of the batch application.
 
+Some tests in the application will also require additional processes, in order to run the remote partitioning implementation
+we also need to start the following on different terminals:
+
+```
+./backing-services/postgresql.sh                                                    # will run on port 5432
+./backing-services/rabbitmq.sh                                                      # will run on port 5672,15672
+./mvnw -pl app spring-boot:run -Dspring-boot.run.profiles=remote,worker,postgres    # will run on port 8080
+```
+
 And then in another terminal:
 
 ```
