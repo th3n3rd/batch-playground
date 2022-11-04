@@ -10,6 +10,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,11 @@ abstract public class ImportTransactionsJourneyTests {
     private Transactions transactions;
 
     private final static String largeAccountId = "1a77305c-6404-4438-bb0c-274921184596";
+
+    @BeforeEach
+    void setUp() {
+        transactions.truncate();
+    }
 
     @Test
     void importRandomSmallAccount() {

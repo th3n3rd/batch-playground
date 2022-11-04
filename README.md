@@ -17,9 +17,9 @@ Some tests in the application will also require additional processes, in order t
 we also need to start the following on different terminals:
 
 ```
-./backing-services/postgresql.sh                                                    # will run on port 5432
-./backing-services/rabbitmq.sh                                                      # will run on port 5672,15672
-./mvnw -pl app spring-boot:run -Dspring-boot.run.profiles=remote,worker,postgres    # will run on port 8080
+./backing-services/postgresql.sh                                             # will run on port 5432
+./backing-services/rabbitmq.sh                                               # will run on port 5672,15672
+./mvnw -pl app spring-boot:run -Dspring-boot.run.profiles=worker,postgres    # will run on a random port
 ```
 
 And then in another terminal:
