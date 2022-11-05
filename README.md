@@ -4,22 +4,17 @@ This repository is used as a playground to experiment building and testing Sprin
 
 # Tests
 
-Most of the tests in `app` are end-to-end (journey tests) and require the `external-system` to be up and running:
-
-```
-./mvnw -pl external-system spring-boot:run
-```
+Most of the tests in `app` are end-to-end (journey tests) and require the `external-system` to be up and running.
 
 Note: the external-system application will run with `chaos-monkey` enabled by default to simulate transient failures at runtime.
 This is done in order to harness the robustness of the batch application.
 
-Some tests in the application will also require additional processes, in order to run the remote partitioning implementation
-we also need to start the following on different terminals:
+Other tests in the application will also require additional processes for the database, queue and workers.
+
+In order to run all the necessary components we can leverage the `docker-compose.yaml` file and run this command in the root of the project:
 
 ```
-./backing-services/postgresql.sh                                             # will run on port 5432
-./backing-services/rabbitmq.sh                                               # will run on port 5672,15672
-./mvnw -pl app spring-boot:run -Dspring-boot.run.profiles=worker,postgres    # will run on a random port
+docker compose up
 ```
 
 And then in another terminal:

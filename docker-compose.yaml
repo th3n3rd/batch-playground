@@ -1,0 +1,32 @@
+services:
+  batch-worker:
+    image: batch-app:0.0.1-SNAPSHOT
+    environment:
+      SERVER_PORT: "0"
+      SPRING_PROFILES_ACTIVE: "worker,postgres"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres-db:5432/batch"
+      SPRING_RABBITMQ_HOST: "rabbitmq-broker"
+      EXTERNAL_SYSTEM_PAYMENT_URL: "http://external-system"
+    deploy:
+      replicas: 2
+
+  external-system:
+    image: external-system:0.0.1-SNAPSHOT
+    ports:
+      - "8081:80"
+    environment:
+      SERVER_PORT: "80"
+
+  postgres-db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: batch
+      POSTGRES_PASSWORD: batch
+
+  rabbitmq-broker:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
