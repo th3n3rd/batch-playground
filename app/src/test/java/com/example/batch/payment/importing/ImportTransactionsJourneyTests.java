@@ -7,7 +7,9 @@ import com.example.batch.payment.Transactions;
 import com.example.batch.payment.client.ExternalPaymentService;
 import com.example.batch.payment.client.MerchantAccountDetail;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,18 +44,41 @@ abstract public class ImportTransactionsJourneyTests {
     void importRandomSmallAccount() {
         var randomSmallAccount = randomSmallAccountFromSource();
         importTransactions(randomSmallAccount);
-        assertThat(countTransactions(randomSmallAccount))
-            .isGreaterThan(0)
-            .isEqualTo(countTransactionsFromSource(randomSmallAccount));
+        assertAllTransactionsHaveBeenImported(randomSmallAccount);
     }
 
     @Test
     void importLargeAccount() {
         var largeAccount = largeAccountFromSource();
         importTransactions(largeAccount);
+        assertAllTransactionsHaveBeenImported(largeAccount);
+    }
+
+    protected List<MerchantAccountDetail> allSmallAccountsFromSource() {
+        return externalPaymentService
+            .listAccounts()
+            .stream()
+            .filter(it -> !it.accountInfo.accountId.equals(largeAccountId))
+            .collect(Collectors.toList());
+    }
+
+    protected void assertAllTransactionsHaveBeenImported(MerchantAccountDetail largeAccount) {
         assertThat(countTransactions(largeAccount))
             .isGreaterThan(0)
             .isEqualTo(countTransactionsFromSource(largeAccount));
+    }
+
+    @SneakyThrows
+    private MerchantAccountDetail randomSmallAccountFromSource() {
+        return allSmallAccountsFromSource()
+            .stream()
+            .findAny()
+            .orElseThrow();
+    }
+
+    @SneakyThrows
+    private MerchantAccountDetail largeAccountFromSource() {
+        return externalPaymentService.accountDetail(largeAccountId);
     }
 
     @SneakyThrows
@@ -69,21 +94,6 @@ abstract public class ImportTransactionsJourneyTests {
 
     private long countTransactions(MerchantAccountDetail account) {
         return transactions.countAllByAccountId(UUID.fromString(account.accountInfo.accountId));
-    }
-
-    @SneakyThrows
-    private MerchantAccountDetail randomSmallAccountFromSource() {
-        return externalPaymentService
-            .listAccounts()
-            .stream()
-            .filter(it -> !it.accountInfo.accountId.equals(largeAccountId))
-            .findAny()
-            .orElseThrow();
-    }
-
-    @SneakyThrows
-    private MerchantAccountDetail largeAccountFromSource() {
-        return externalPaymentService.accountDetail(largeAccountId);
     }
 
     abstract protected void importTransactions(MerchantAccountDetail account);
