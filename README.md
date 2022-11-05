@@ -25,12 +25,14 @@ And then in another terminal:
 
 ## Metrics
 
-In order to allow the application to collect and send metrics to NewRelic, create an `application-newrelic.properties` under `src/main/resources`
-with the following properties:
+Metrics are collected by `Prometheus` every 5s and `Grafana` has been already configured with some custom dashboards
+that can be used to monitor the performance of the batch operations:
 
-```
-newrelic.serviceName=${spring.application.name}
-newrelic.apiKey=<your-newrelic-api-key>
-newrelic.step=30s
-newrelic.uri=https://metric-api.eu.newrelic.com/metric/v1
-```
+- JVM (Micrometer)[^1]: used to display general and common metrics for JVMs
+- Spring Batch Prometheus[^2]: used to display throughput and some common metrics for batch processing
+
+![Spring Batch Metrics](docs/spring-batch-metrics.png)
+
+
+[^1]: This is a modified dashboard, the original one comes from the open source Dashboard in the Grafana website and can be found [here](https://grafana.com/grafana/dashboards/4701-jvm-micrometer/)
+[^2]: This is a modified dashboard, the original one comes from the open source GitHub repository of Spring Batch and can be found [here](https://github.com/spring-projects/spring-batch/blob/main/spring-batch-samples/src/grafana/spring-batch-dashboard.json)
